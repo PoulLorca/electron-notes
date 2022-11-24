@@ -1,0 +1,12 @@
+html, body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;    
+}
+
+.CodeMirror{
+    flex:1;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;    
+    
+}

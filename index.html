@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./node_modules/simplemde/dist/simplemde.min.css">
+    <script src="./node_modules/simplemde/dist/simplemde.min.js"></script>
+
+    <link rel="stylesheet" href="./css/style.css">
+
+    <title>My Editor - Sin nombre</title>
+</head>
+
+<body>
+    <textarea name="simpleMDE" id="SimpleMDE"></textarea>
+
+    <script>
+        var simplemde = new SimpleMDE({ element: document.getElementById("SimpleMDE") });
+    </script>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        ipcRenderer.on('font-family', (event,arg) =>{
+            let  text = document.querySelector('.CodeMirror');            
+            text.style.fontFamily = arg;
+        })
+
+        ipcRenderer.on('editor-channel',(event,arg)=>{
+            event.sender.send('editor-channel', simplemde.value())
+        })
+
+        ipcRenderer.on('file-open', (event,arg)=>{            
+            simplemde.value(arg);
+        })        
+
+        ipcRenderer.on('document-name', (event, arg)=>{
+            document.title = `My Editor - ${arg}`            
+        })
+
+        document.ondrop = function(event){            
+            console.log(event);
+            event.preventDefault()
+
+            if(event.dataTransfer.items){
+                let item = event.dataTransfer.items[0]
+                if(item.kind =="file" && item.type == "text/plain"){
+                    var reader = new FileReader()
+                    var file = item.getAsFile()
+                    reader.onload = e =>{                        
+                        simplemde.value(e.target.result)
+                    }
+                    
+                    reader.readAsText(file);
+                }else{
+                    alert("Invalid document format")
+                }
+            }            
+        }
+    </script>
+</body>
+
+</html>
